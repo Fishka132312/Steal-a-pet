@@ -8,27 +8,36 @@ local Tab = Window:MakeTab({
 })
 
 Tab:AddButton({
-	Name = "Steal 🔥",
+	Name = "Tutorial ✍️",
 	Callback = function()
-    local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    OrionLib:MakeNotification({
+	Name = "Tutorial",
+	Content = "1. Remove all other doors, enable noclip and instant prompt. 2. Inject Infinite Yield, then activate Dex and enable click-to-select mode. Click on the pet you want to steal and set the max selection distance to 10,000. 3. Keep close to the door and start spamming the “E” key just as the door is about to open.  4. Once you’ve stolen the pet, enable fly mode and try to fly under the map — the anti-cheat will automatically teleport you back to your plot.  5. Enjoy! ",
+	Image = "rbxassetid://4483345998",
+	Time = 20
+})
+  	end    
+})
 
-local plots = workspace:WaitForChild("__THINGS"):WaitForChild("Plots")
+Tab:AddButton({
+	Name = "Remove Doors (Visual) 🔨",
+	Callback = function()
+    local plotsFolder = workspace.__THINGS.Plots
 
-for i = 1, 10000 do
-    local group = plots:FindFirstChild(tostring(i))
-    if group then
-        local lockButton = group:FindFirstChild("LockButton")
-        if lockButton and lockButton:FindFirstChildOfClass("TouchTransmitter") then
-            local collectPart = group:FindFirstChild("CollectPart")
-            if collectPart then
-                -- Телепортируем к CollectPart (чуть выше, чтобы не провалиться)
-                humanoidRootPart.CFrame = collectPart.CFrame + Vector3.new(0, 6, 0)
-                break
+for i = 1, 1000 do
+    local plot = plotsFolder:FindFirstChild(tostring(i))
+    if plot then
+        local doorFolder = plot:FindFirstChild("Door")
+        if doorFolder then
+            for _, item in pairs(doorFolder:GetChildren()) do
+                item:Destroy()
             end
+            print("Очистил Door в plot " .. i)
+        else
+            print("Папка Door не найдена в plot " .. i)
         end
+    else
+        print("Plot " .. i .. " не найден")
     end
 end
 
@@ -36,14 +45,21 @@ end
 })
 
 Tab:AddButton({
-	Name = "Speed max ⚡",
+	Name = "Infinite Yield",
+	Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Speed max ⚡ (Speed Coil Requered)",
 	Callback = function()
     local RunService = game:GetService("RunService")
 local player = game.Players.LocalPlayer
 
 RunService.RenderStepped:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = 100
+        player.Character.Humanoid.WalkSpeed = 70
     end
 end)
   	end    
@@ -101,116 +117,6 @@ end
 game.DescendantAdded:Connect(function(descendant)
 	setHoldDurationZero(descendant)
 end)
-  	end    
-})
-
-Tab:AddButton({
-	Name = "Lock Plot 🔒",
-    Callback = function()
-    local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
-
-local plots = workspace.__THINGS.Plots
-
-local function findLockButtonWithTouch()
-	for i = 1, 10000 do
-		local group = plots:FindFirstChild(tostring(i))
-		if group then
-			local lockbutton = group:FindFirstChild("LockButton")
-			if lockbutton and lockbutton:FindFirstChildOfClass("TouchTransmitter") then
-				return lockbutton
-			end
-		end
-	end
-	return nil
-end
-
-local lockButton = findLockButtonWithTouch()
-
-if lockButton then
-	RunService.RenderStepped:Connect(function()
-		firetouchinterest(hrp, lockButton, 0)
-		firetouchinterest(hrp, lockButton, 1)
-	end)
-else
-	warn("TouchTransmitter не найден")
-end
-
-  	end    
-})
-
-Tab:AddButton({
-	Name = "Plot timer ⏲️",
-	Callback = function()
-    local Workspace = game:GetService("Workspace")
-local Plots = Workspace.__THINGS.Plots
-
--- Функция создания или обновления таймера
-local function createOrUpdateTimerGui(plot)
-    local lockButton = plot:FindFirstChild("LockButton")
-    if not lockButton then return end
-    
-    local billboard = lockButton:FindFirstChild("Billboard")
-    if not billboard then return end
-    
-    local frame = billboard:FindFirstChild("Frame")
-    if not frame then return end
-    
-    local rateLabel = frame:FindFirstChild("Rate")
-    if not rateLabel or not rateLabel:IsA("TextLabel") then return end
-
-    -- Проверяем, есть ли уже таймер
-    local timerGui = lockButton:FindFirstChild("TimerGui")
-    if not timerGui then
-        timerGui = Instance.new("BillboardGui")
-        timerGui.Name = "TimerGui"
-        timerGui.Adornee = lockButton
-        timerGui.AlwaysOnTop = true
-        timerGui.Size = UDim2.new(0, 300, 0, 100)
-        timerGui.StudsOffset = Vector3.new(0, 5, 0)
-        timerGui.Parent = lockButton
-
-        local timerLabel = Instance.new("TextLabel")
-        timerLabel.Name = "TimerLabel"
-        timerLabel.Size = UDim2.new(1, 0, 1, 0)
-        timerLabel.BackgroundTransparency = 1
-        timerLabel.TextColor3 = Color3.new(1, 0, 0)
-        timerLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
-        timerLabel.TextStrokeTransparency = 0
-        timerLabel.Font = Enum.Font.SourceSansBold
-        timerLabel.TextScaled = true
-        timerLabel.Parent = timerGui
-    end
-
-    local timerLabel = timerGui:FindFirstChild("TimerLabel")
-    if timerLabel then
-        timerLabel.Text = rateLabel.Text
-    end
-end
-
--- Функция для обновления всех Plot раз в 0.1 секунды
-local function updateAllTimers()
-    while true do
-        for _, plot in pairs(Plots:GetChildren()) do
-            createOrUpdateTimerGui(plot)
-        end
-        wait(0.1)
-    end
-end
-
--- Следим за новыми Plot, создаем таймеры сразу
-Plots.ChildAdded:Connect(function(plot)
-    if plot:IsA("Model") then
-        createOrUpdateTimerGui(plot)
-    end
-end)
-
--- Запускаем бесконечное обновление таймеров
-spawn(updateAllTimers)
   	end    
 })
 
@@ -451,6 +357,150 @@ Teleport()
   	end    
 })
 
+Tab:AddButton({
+	Name = "Steal 🔥 (FIXED)",
+	Callback = function()
+    local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local plots = workspace:WaitForChild("__THINGS"):WaitForChild("Plots")
+
+for i = 1, 10000 do
+    local group = plots:FindFirstChild(tostring(i))
+    if group then
+        local lockButton = group:FindFirstChild("LockButton")
+        if lockButton and lockButton:FindFirstChildOfClass("TouchTransmitter") then
+            local collectPart = group:FindFirstChild("CollectPart")
+            if collectPart then
+                -- Телепортируем к CollectPart (чуть выше, чтобы не провалиться)
+                humanoidRootPart.CFrame = collectPart.CFrame + Vector3.new(0, 6, 0)
+                break
+            end
+        end
+    end
+end
+
+  	end    
+})
+
+local Tab = Window:MakeTab({
+	Name = "Plot",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+Tab:AddButton({
+	Name = "Always Lock Plot 🔒",
+    Callback = function()
+    local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+local plots = workspace.__THINGS.Plots
+
+local function findLockButtonWithTouch()
+	for i = 1, 10000 do
+		local group = plots:FindFirstChild(tostring(i))
+		if group then
+			local lockbutton = group:FindFirstChild("LockButton")
+			if lockbutton and lockbutton:FindFirstChildOfClass("TouchTransmitter") then
+				return lockbutton
+			end
+		end
+	end
+	return nil
+end
+
+local lockButton = findLockButtonWithTouch()
+
+if lockButton then
+	RunService.RenderStepped:Connect(function()
+		firetouchinterest(hrp, lockButton, 0)
+		firetouchinterest(hrp, lockButton, 1)
+	end)
+else
+	warn("TouchTransmitter не найден")
+end
+
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Plot timer ⏲️",
+	Callback = function()
+    local Workspace = game:GetService("Workspace")
+local Plots = Workspace.__THINGS.Plots
+
+-- Функция создания или обновления таймера
+local function createOrUpdateTimerGui(plot)
+    local lockButton = plot:FindFirstChild("LockButton")
+    if not lockButton then return end
+    
+    local billboard = lockButton:FindFirstChild("Billboard")
+    if not billboard then return end
+    
+    local frame = billboard:FindFirstChild("Frame")
+    if not frame then return end
+    
+    local rateLabel = frame:FindFirstChild("Rate")
+    if not rateLabel or not rateLabel:IsA("TextLabel") then return end
+
+    -- Проверяем, есть ли уже таймер
+    local timerGui = lockButton:FindFirstChild("TimerGui")
+    if not timerGui then
+        timerGui = Instance.new("BillboardGui")
+        timerGui.Name = "TimerGui"
+        timerGui.Adornee = lockButton
+        timerGui.AlwaysOnTop = true
+        timerGui.Size = UDim2.new(0, 300, 0, 100)
+        timerGui.StudsOffset = Vector3.new(0, 5, 0)
+        timerGui.Parent = lockButton
+
+        local timerLabel = Instance.new("TextLabel")
+        timerLabel.Name = "TimerLabel"
+        timerLabel.Size = UDim2.new(1, 0, 1, 0)
+        timerLabel.BackgroundTransparency = 1
+        timerLabel.TextColor3 = Color3.new(1, 0, 0)
+        timerLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+        timerLabel.TextStrokeTransparency = 0
+        timerLabel.Font = Enum.Font.SourceSansBold
+        timerLabel.TextScaled = true
+        timerLabel.Parent = timerGui
+    end
+
+    local timerLabel = timerGui:FindFirstChild("TimerLabel")
+    if timerLabel then
+        timerLabel.Text = rateLabel.Text
+    end
+end
+
+-- Функция для обновления всех Plot раз в 0.1 секунды
+local function updateAllTimers()
+    while true do
+        for _, plot in pairs(Plots:GetChildren()) do
+            createOrUpdateTimerGui(plot)
+        end
+        wait(0.1)
+    end
+end
+
+-- Следим за новыми Plot, создаем таймеры сразу
+Plots.ChildAdded:Connect(function(plot)
+    if plot:IsA("Model") then
+        createOrUpdateTimerGui(plot)
+    end
+end)
+
+-- Запускаем бесконечное обновление таймеров
+spawn(updateAllTimers)
+  	end    
+})
+
 local Tab = Window:MakeTab({
 	Name = "Farm",
 	Icon = "rbxassetid://4483345998",
@@ -555,3 +605,4 @@ end
 })
 
 OrionLib:Init()
+
