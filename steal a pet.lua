@@ -12,7 +12,7 @@ Tab:AddButton({
 	Callback = function()
     OrionLib:MakeNotification({
 	Name = "Tutorial",
-	Content = "1. Remove all other doors, enable noclip and instant prompt. 2. Change max distance steal pet, delete not needed pets, use noclip and instant prompt. 3. Inject Infinite Yield (for fly).  4. Keep close to the door and start spamming the “E” key just as the door is about to open.  5. Once you’ve stolen the pet, enable fly mode and try to fly under the map (dont look down) — the anti-cheat will automatically teleport you back to your plot. Enjoy! ",
+	Content = "1. Remove all other doors, enable noclip and instant prompt. 2. Change max distance steal pet, delete not needed pets. 3. Inject Infinite Yield (for fly).  4. Keep close to the door and start spamming the “E” key just as the door is about to open.  5. Once you’ve stolen the pet, enable fly mode and try to fly under the map (dont look down) — the anti-cheat will automatically teleport you back to your plot. Enjoy! ",
 	Image = "rbxassetid://4483345998",
 	Time = 20
 })
@@ -40,55 +40,6 @@ for i = 1, 1000 do
         print("Plot " .. i .. " не найден")
     end
 end
-
-  	end    
-})
-
-Tab:AddButton({
-	Name = "Change max distance steal pets😎 (Careful with your pets!)",
-	Callback = function()
-    local standPetsFolder = workspace.__THINGS.StandPets
-
-for _, petGroup in pairs(standPetsFolder:GetChildren()) do
-    local rootPart = petGroup:FindFirstChild("RootPart")
-    if rootPart then
-        local proximityPrompt = rootPart:FindFirstChildOfClass("ProximityPrompt")
-        if proximityPrompt then
-            proximityPrompt.MaxActivationDistance = 10000
-            print("MaxActivationDistance обновлен для StandPet: ".. petGroup.Name)
-        end
-    end
-end
-  	end    
-})
-
-Tab:AddButton({
-	Name = "Click to delete not needed pets (work for 5 sek)",
-	Callback = function()
-    local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
-
--- Флаг, разрешающий удаление
-local canDelete = true
-
--- Через 5 секунд отключаем возможность удаления
-task.delay(5, function()
-	canDelete = false
-end)
-
-mouse.Button1Down:Connect(function()
-	if not canDelete then return end
-
-	local target = mouse.Target
-	if not target then return end
-
-	-- Ищем родительский Model
-	local group = target:FindFirstAncestorOfClass("Model")
-	if group and group:IsDescendantOf(workspace) then
-		group:Destroy() -- Удаляем всю группу (модель)
-	end
-end)
 
   	end    
 })
@@ -145,6 +96,55 @@ end
 game.DescendantAdded:Connect(function(descendant)
 	setHoldDurationZero(descendant)
 end)
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Change max distance steal pets😎 (Careful with your pets!)",
+	Callback = function()
+    local standPetsFolder = workspace.__THINGS.StandPets
+
+for _, petGroup in pairs(standPetsFolder:GetChildren()) do
+    local rootPart = petGroup:FindFirstChild("RootPart")
+    if rootPart then
+        local proximityPrompt = rootPart:FindFirstChildOfClass("ProximityPrompt")
+        if proximityPrompt then
+            proximityPrompt.MaxActivationDistance = 10000
+            print("MaxActivationDistance обновлен для StandPet: ".. petGroup.Name)
+        end
+    end
+end
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Click to delete not needed pets (work for 5 sek)",
+	Callback = function()
+    local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Флаг, разрешающий удаление
+local canDelete = true
+
+-- Через 5 секунд отключаем возможность удаления
+task.delay(5, function()
+	canDelete = false
+end)
+
+mouse.Button1Down:Connect(function()
+	if not canDelete then return end
+
+	local target = mouse.Target
+	if not target then return end
+
+	-- Ищем родительский Model
+	local group = target:FindFirstAncestorOfClass("Model")
+	if group and group:IsDescendantOf(workspace) then
+		group:Destroy() -- Удаляем всю группу (модель)
+	end
+end)
+
   	end    
 })
 
