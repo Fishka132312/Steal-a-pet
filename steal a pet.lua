@@ -100,7 +100,7 @@ end)
 })
 
 Tab:AddButton({
-	Name = "Change max distance steal pets😎 (Careful with your pets!)",
+	Name = "Change max distance steal pets😎",
 	Callback = function()
     local standPetsFolder = workspace.__THINGS.StandPets
 
