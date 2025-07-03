@@ -59,7 +59,7 @@ local player = game.Players.LocalPlayer
 
 RunService.RenderStepped:Connect(function()
     if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = 70
+        player.Character.Humanoid.WalkSpeed = 50
     end
 end)
   	end    
