@@ -12,7 +12,7 @@ Tab:AddButton({
 	Callback = function()
     OrionLib:MakeNotification({
 	Name = "Tutorial",
-	Content = "1. Remove all other doors, enable noclip and instant prompt. 2. Inject Infinite Yield, then activate Dex and enable click-to-select mode. Click on the pet you want to steal and set the max selection distance to 10,000. 3. Keep close to the door and start spamming the “E” key just as the door is about to open.  4. Once you’ve stolen the pet, enable fly mode and try to fly under the map — the anti-cheat will automatically teleport you back to your plot.  5. Enjoy! ",
+	Content = "1. Remove all other doors, enable noclip and instant prompt. 2. Change max distance steal pet, delete not needed pets, use noclip and instant prompt. 3. Inject Infinite Yield (for fly).  4. Keep close to the door and start spamming the “E” key just as the door is about to open.  5. Once you’ve stolen the pet, enable fly mode and try to fly under the map (dont look down) — the anti-cheat will automatically teleport you back to your plot. Enjoy! ",
 	Image = "rbxassetid://4483345998",
 	Time = 20
 })
@@ -45,23 +45,51 @@ end
 })
 
 Tab:AddButton({
-	Name = "Infinite Yield",
+	Name = "Change max distance steal pets😎 (Careful with your pets!)",
 	Callback = function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    local standPetsFolder = workspace.__THINGS.StandPets
+
+for _, petGroup in pairs(standPetsFolder:GetChildren()) do
+    local rootPart = petGroup:FindFirstChild("RootPart")
+    if rootPart then
+        local proximityPrompt = rootPart:FindFirstChildOfClass("ProximityPrompt")
+        if proximityPrompt then
+            proximityPrompt.MaxActivationDistance = 10000
+            print("MaxActivationDistance обновлен для StandPet: ".. petGroup.Name)
+        end
+    end
+end
   	end    
 })
 
 Tab:AddButton({
-	Name = "Speed max ⚡ (Speed Coil Requered)",
+	Name = "Click to delete not needed pets (work for 5 sek)",
 	Callback = function()
-    local RunService = game:GetService("RunService")
-local player = game.Players.LocalPlayer
+    local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
 
-RunService.RenderStepped:Connect(function()
-    if player.Character and player.Character:FindFirstChild("Humanoid") then
-        player.Character.Humanoid.WalkSpeed = 50
-    end
+-- Флаг, разрешающий удаление
+local canDelete = true
+
+-- Через 5 секунд отключаем возможность удаления
+task.delay(5, function()
+	canDelete = false
 end)
+
+mouse.Button1Down:Connect(function()
+	if not canDelete then return end
+
+	local target = mouse.Target
+	if not target then return end
+
+	-- Ищем родительский Model
+	local group = target:FindFirstAncestorOfClass("Model")
+	if group and group:IsDescendantOf(workspace) then
+		group:Destroy() -- Удаляем всю группу (модель)
+	end
+end)
+
   	end    
 })
 
@@ -116,6 +144,27 @@ end
 -- Следить за новыми объектами
 game.DescendantAdded:Connect(function(descendant)
 	setHoldDurationZero(descendant)
+end)
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Infinite Yield",
+	Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Speed max ⚡",
+	Callback = function()
+    local RunService = game:GetService("RunService")
+local player = game.Players.LocalPlayer
+
+RunService.RenderStepped:Connect(function()
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = 50
+    end
 end)
   	end    
 })
@@ -540,6 +589,61 @@ if #buttonsToTouch > 0 then
 	end)
 else
 	warn("Нет ни одной кнопки с TouchTransmitter")
+end
+
+  	end    
+})
+
+local Tab = Window:MakeTab({
+	Name = "Buy",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Section = Tab:AddSection({
+	Name = "Buy things"
+})
+
+Tab:AddButton({
+	Name = "Instant Prompt 👉",
+	Callback = function()
+    -- Скрипт можно вставить в ServerScriptService
+
+local function setHoldDurationZero(object)
+	if object:IsA("ProximityPrompt") then
+		object.HoldDuration = 0
+	end
+end
+
+-- Пройтись по всем существующим объектам
+for _, descendant in pairs(game:GetDescendants()) do
+	setHoldDurationZero(descendant)
+end
+
+-- Следить за новыми объектами
+game.DescendantAdded:Connect(function(descendant)
+	setHoldDurationZero(descendant)
+end)
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Buy pets anywhere🤑",
+	Callback = function()
+    local petsFolder = workspace.__THINGS.Pets
+
+while true do
+    for _, petGroup in pairs(petsFolder:GetChildren()) do
+        local mainPart = petGroup:FindFirstChild("Main")
+        if mainPart then
+            local proximityPrompt = mainPart:FindFirstChildOfClass("ProximityPrompt")
+            if proximityPrompt then
+                proximityPrompt.MaxActivationDistance = 10000
+                print("MaxActivationDistance обновлен для питомца: ".. petGroup.Name)
+            end
+        end
+    end
+    wait(1)  -- задержка 5 секунд между проверками, можно изменить под нужды
 end
 
   	end    
