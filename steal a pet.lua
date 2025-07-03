@@ -357,38 +357,14 @@ Teleport()
   	end    
 })
 
-Tab:AddButton({
-	Name = "Steal 🔥 (FIXED)",
-	Callback = function()
-    local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-local plots = workspace:WaitForChild("__THINGS"):WaitForChild("Plots")
-
-for i = 1, 10000 do
-    local group = plots:FindFirstChild(tostring(i))
-    if group then
-        local lockButton = group:FindFirstChild("LockButton")
-        if lockButton and lockButton:FindFirstChildOfClass("TouchTransmitter") then
-            local collectPart = group:FindFirstChild("CollectPart")
-            if collectPart then
-                -- Телепортируем к CollectPart (чуть выше, чтобы не провалиться)
-                humanoidRootPart.CFrame = collectPart.CFrame + Vector3.new(0, 6, 0)
-                break
-            end
-        end
-    end
-end
-
-  	end    
-})
-
 local Tab = Window:MakeTab({
 	Name = "Plot",
 	Icon = "rbxassetid://4483345998",
 	PremiumOnly = false
+})
+
+local Section = Tab:AddSection({
+	Name = "Your Plot"
 })
 
 Tab:AddButton({
@@ -507,6 +483,10 @@ local Tab = Window:MakeTab({
 	PremiumOnly = false
 })
 
+local Section = Tab:AddSection({
+	Name = "Farm"
+})
+
 Tab:AddButton({
 	Name = "Collect coins 💸",
 	Callback = function()
@@ -565,40 +545,39 @@ end
   	end    
 })
 
-Tab:AddButton({
-	Name = "Lock Plot 🔒",
-    Callback = function()
-    local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+local Tab = Window:MakeTab({
+	Name = "Test",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
 
+local Section = Tab:AddSection({
+	Name = "Test"
+})
+
+Tab:AddButton({
+	Name = "Steal 🔥 (FIXED)",
+	Callback = function()
+    local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
-local plots = workspace.__THINGS.Plots
+local plots = workspace:WaitForChild("__THINGS"):WaitForChild("Plots")
 
-local function findLockButtonWithTouch()
-	for i = 1, 10000 do
-		local group = plots:FindFirstChild(tostring(i))
-		if group then
-			local lockbutton = group:FindFirstChild("LockButton")
-			if lockbutton and lockbutton:FindFirstChildOfClass("TouchTransmitter") then
-				return lockbutton
-			end
-		end
-	end
-	return nil
-end
-
-local lockButton = findLockButtonWithTouch()
-
-if lockButton then
-	RunService.RenderStepped:Connect(function()
-		firetouchinterest(hrp, lockButton, 0)
-		firetouchinterest(hrp, lockButton, 1)
-	end)
-else
-	warn("TouchTransmitter не найден")
+for i = 1, 10000 do
+    local group = plots:FindFirstChild(tostring(i))
+    if group then
+        local lockButton = group:FindFirstChild("LockButton")
+        if lockButton and lockButton:FindFirstChildOfClass("TouchTransmitter") then
+            local collectPart = group:FindFirstChild("CollectPart")
+            if collectPart then
+                -- Телепортируем к CollectPart (чуть выше, чтобы не провалиться)
+                humanoidRootPart.CFrame = collectPart.CFrame + Vector3.new(0, 6, 0)
+                break
+            end
+        end
+    end
 end
 
   	end    
