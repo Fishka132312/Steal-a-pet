@@ -14,7 +14,7 @@ Tab:AddButton({
 	Name = "Tutorial",
 	Content = "1. Remove all other doors, enable noclip and instant prompt. 2. Change max distance steal pet, delete not needed pets. 3. Inject Infinite Yield (for fly).  4. Keep close to the door and start spamming the “E” key just as the door is about to open.  5. Once you’ve stolen the pet, enable fly mode and try to fly under the map (dont look down) — the anti-cheat will automatically teleport you back to your plot. Enjoy! ",
 	Image = "rbxassetid://4483345998",
-	Time = 20
+	Time = 30
 })
   	end    
 })
