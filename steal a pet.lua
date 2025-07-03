@@ -582,8 +582,6 @@ Tab:AddButton({
 	Name = "Buy pets anywhere🤑",
 	Callback = function()
     local petsFolder = workspace.__THINGS.Pets
-
-while true do
     for _, petGroup in pairs(petsFolder:GetChildren()) do
         local mainPart = petGroup:FindFirstChild("Main")
         if mainPart then
@@ -594,8 +592,24 @@ while true do
             end
         end
     end
-    wait(1)  -- задержка 5 секунд между проверками, можно изменить под нужды
-end
+
+  	end    
+})
+
+Tab:AddButton({
+	Name = "Buy pets anywhere🤑 2",
+	Callback = function()
+    local petsFolder = workspace.__THINGS.Pets
+    for _, petGroup in pairs(petsFolder:GetChildren()) do
+        local mainPart = petGroup:FindFirstChild("Main")
+        if mainPart then
+            local proximityPrompt = mainPart:FindFirstChildOfClass("ProximityPrompt")
+            if proximityPrompt then
+                proximityPrompt.MaxActivationDistance = 5
+                print("MaxActivationDistance обновлен для питомца: ".. petGroup.Name)
+            end
+        end
+    end
 
   	end    
 })
