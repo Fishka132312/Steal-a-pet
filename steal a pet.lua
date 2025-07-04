@@ -370,38 +370,40 @@ local Section = Tab:AddSection({
 Tab:AddButton({
 	Name = "Always Lock Plot 🔒",
     Callback = function()
-    local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-
+	local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
 
-local plots = workspace.__THINGS.Plots
-
-local function findLockButtonWithTouch()
-	for i = 1, 10000 do
-		local group = plots:FindFirstChild(tostring(i))
-		if group then
-			local lockbutton = group:FindFirstChild("LockButton")
-			if lockbutton and lockbutton:FindFirstChildOfClass("TouchTransmitter") then
-				return lockbutton
-			end
-		end
-	end
-	return nil
+local function getTargetPart()
+    return workspace:FindFirstChild("__THINGS") and
+           workspace.__THINGS:FindFirstChild("Plots") and
+           workspace.__THINGS.Plots:FindFirstChild("1") and
+           workspace.__THINGS.Plots["1"]:FindFirstChild("LockButton") and
+           workspace.__THINGS.Plots["1"].LockButton:FindFirstChild("Part")
 end
 
-local lockButton = findLockButtonWithTouch()
+RunService.RenderStepped:Connect(function()
+    local char = player.Character
+    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local targetPart = getTargetPart()
 
-if lockButton then
-	RunService.RenderStepped:Connect(function()
-		firetouchinterest(hrp, lockButton, 0)
-		firetouchinterest(hrp, lockButton, 1)
-	end)
-else
-	warn("TouchTransmitter не найден")
-end
+    if root and targetPart then
+        -- Притягиваем Part к игроку, но на небольшом расстоянии впереди
+        local offset = root.CFrame.LookVector * 2 -- можно изменить расстояние
+        targetPart.CFrame = root.CFrame + offset
+        -- Можно отключить физику
+        if targetPart:FindFirstChild("BodyPosition") == nil then
+            local bp = Instance.new("BodyPosition")
+            bp.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+            bp.Position = (root.Position + offset)
+            bp.P = 1e4
+            bp.D = 100
+            bp.Parent = targetPart
+        else
+            targetPart.BodyPosition.Position = (root.Position + offset)
+        end
+    end
+end)
 
   	end    
 })
